@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "taskflow"
+version = "0.1.0"
+description = "Production-grade TaskFlow backend"
+requires-python = ">=3.13"
+
+dependencies = [
+    "fastapi==0.114.0",
+    "uvicorn==0.30.5",
+    "sqlalchemy",
+    "psycopg[binary]",
+    "alembic",
+    "pydantic-settings",
+]
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "httpx",
+]
+
+[tool.setuptools]
+packages = ["app"]

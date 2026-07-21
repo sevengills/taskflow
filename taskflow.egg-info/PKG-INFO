@@ -1,0 +1,14 @@
+Metadata-Version: 2.4
+Name: taskflow
+Version: 0.1.0
+Summary: Production-grade TaskFlow backend
+Requires-Python: >=3.13
+Requires-Dist: fastapi==0.114.0
+Requires-Dist: uvicorn==0.30.5
+Requires-Dist: sqlalchemy
+Requires-Dist: psycopg[binary]
+Requires-Dist: alembic
+Requires-Dist: pydantic-settings
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: httpx; extra == "dev"

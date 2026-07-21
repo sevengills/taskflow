@@ -1,0 +1,20 @@
+services:
+  taskflow:
+    image: ghcr.io/<your-username>/taskflow:latest
+
+    env_file:
+      - ../.env
+
+    ports:
+      - "8000:8000"
+
+    restart: unless-stopped
+
+    depends_on:
+      - postgres
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health/ready"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
