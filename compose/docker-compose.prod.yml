@@ -1,20 +1,56 @@
 services:
-  taskflow:
-    image: ghcr.io/<your-username>/taskflow:latest
+
+  postgres:
+    image: postgres:16
+
+    restart: unless-stopped
 
     env_file:
-      - ../.env
+      - .env
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # migrate:
+  #   image: ghcr.io/sevengills/taskflow:latest
+
+  #   env_file:
+  #     - .env
+
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+
+  #   command: >
+  #     alembic upgrade head
+
+  taskflow:
+    image: ghcr.io/sevengills/taskflow:latest
+
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    depends_on:
+      postgres:
+        condition: service_healthy
 
     ports:
       - "8000:8000"
 
-    restart: unless-stopped
-
-    depends_on:
-      - postgres
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health/ready"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 5s
       retries: 3
       start_period: 10s
+
+volumes:
+  postgres_data:
