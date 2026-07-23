@@ -15,7 +15,9 @@ echo "[1/5] Pulling latest images..."
 docker compose pull
 
 echo "[2/5] Recreating containers..."
-docker compose up -d --remove-orphans
+docker compose \
+    -f docker-compose.prod.yml \
+    up -d --remove-orphans
 
 echo "[3/5] Waiting for services..."
 sleep 5
