@@ -27,9 +27,9 @@ class Settings(BaseSettings):
     postgres_user: str = Field(alias="POSTGRES_USER")
     postgres_password: str = Field(alias="POSTGRES_PASSWORD")
     postgres_db: str = Field(alias="POSTGRES_DB")
-    app_name: str = "TaskFlow"
-    debug: bool = False
-    log_level: str = "INFO"
+    app_name: str = Field(default="TaskFlow", alias="APP_NAME")
+    debug: bool = Field(default=False, alias="DEBUG")
+    log_level: str = Field(default="INFO", alias="LOG_LEVEL")
 
     @property
     def database(self) -> DatabaseConfig:
