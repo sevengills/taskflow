@@ -1,0 +1,69 @@
+name: Deploy to EC2
+
+on:
+  workflow_run:
+    workflows:
+      - Publish Docker Image
+    types:
+      - completed
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy Application
+
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+
+      - name: Assemble Deployment Bundle
+        run: |
+          mkdir deployment
+
+          cp -R compose deployment/
+          cp -R scripts deployment/
+
+          if [ -d infra ]; then
+            cp -R infra deployment/
+          fi
+
+      - name: Verify Deployment Bundle
+        run: |
+          echo "Deployment bundle contents:"
+          find deployment
+      
+      - name: Verify Repository Layout
+        run: |
+          ls
+          ls compose
+          ls scripts
+
+      - name: Sync Deployment Assets
+        uses: burnett01/rsync-deployments@7.0.2
+        with:
+          switches: -avzr --delete
+          path: deployment/
+          remote_path: /opt/taskflow/
+          remote_host: ${{ secrets.EC2_HOST }}
+          remote_user: ${{ secrets.EC2_USERNAME }}
+          remote_key: ${{ secrets.EC2_SSH_KEY }}
+
+      - name: Deploy Application
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            chmod +x /opt/taskflow/scripts/deploy.sh
+            /opt/taskflow/scripts/deploy.sh

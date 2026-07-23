@@ -1,3 +1,23 @@
-*.DS_Store
-__pycache__
-.env
+# virtual env
+.venv/
+venv/
+
+# python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Environment
+env/.env
+
+# IDE
+.vscode/
+.idea/
+
+# macOS
+.DS_Store

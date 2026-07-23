@@ -1,11 +1,29 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-set -e
+set -Eeuo pipefail
 
-echo "Pulling latest image..."
-docker compose -f compose/docker-compose.prod.yml pull
+APP_DIR="/opt/taskflow"
+COMPOSE_DIR="$APP_DIR/compose"
 
-echo "Starting services..."
-docker compose -f compose/docker-compose.prod.yml up -d
+echo "========================================="
+echo "TaskFlow Deployment Started"
+echo "========================================="
 
-echo "Deployment complete."
+cd "$COMPOSE_DIR"
+
+echo "[1/5] Pulling latest images..."
+docker compose pull
+
+echo "[2/5] Recreating containers..."
+docker compose up -d --remove-orphans
+
+echo "[3/5] Waiting for services..."
+sleep 5
+
+echo "[4/5] Container status"
+docker compose ps
+
+echo "[5/5] Removing unused images..."
+docker image prune -f
+
+echo "Deployment completed successfully."
